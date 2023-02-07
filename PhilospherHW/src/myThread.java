@@ -11,7 +11,7 @@ class myThread extends Thread {
         int stick1 = position-1 % 5;
         int stick2 = position+1 % 5;
 
-        if(sticks.get(stick1) == true || sticks.get(stick2)){
+        if(!sticks.get(stick1) || !sticks.get(stick2)){
             System.out.println("One or more sticks not available!!");
         }else {
             sticks.set(stick1, true);
