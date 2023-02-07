@@ -5,18 +5,24 @@ public class Main {
         System.out.println("Hello world!");
 //        myThread philosopher = new myThread();
 //        philosopher.start();
-        myThread[] philosophers = new myThread[5];
+        philosopher[] philosophers = new philosopher[5];
 
 
         // creating the 5 philosophers as 5 different threads
-        for (int i = 0; i < philosophers.length; i++) {
-            philosophers[i] = new myThread();
+
+
+
+        ArrayList<chopStick> sticks = new ArrayList<>();
+        for(int i = 0; i < 5; i++){
+            sticks.add(new chopStick());
         }
 
+        for (int i = 0; i < philosophers.length; i++) {
+            philosophers[i] = new philosopher(i, sticks);
 
-        ArrayList<Boolean> sticks = new ArrayList<>();
-        for(int i = 0; i < 5; i++){
-            sticks.add(false);
+        }
+        for (int i = 0; i < philosophers.length; i++) {
+            philosophers[i].start();
         }
 
         System.out.println(sticks);
