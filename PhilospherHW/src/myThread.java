@@ -1,13 +1,19 @@
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 class philosopher extends Thread {
 
     private int position;
     private ArrayList<chopStick> sticks;
 
-    public philosopher(int position, ArrayList<chopStick> sticks) {
+    private ArrayList<Semaphore> chopstickSemaphores;
+
+
+
+    public philosopher(int position, ArrayList<chopStick> sticks, ArrayList<Semaphore> chopstickSemaphores) {
         this.position = position;
         this.sticks = sticks;
+        this.chopstickSemaphores =  chopstickSemaphores;
     }
 
     @Override
@@ -25,14 +31,17 @@ class philosopher extends Thread {
     }
 
     public void eat() {
-        int stick1 = position - 1 % 5;
-        int stick2 = position + 1 % 5;
+
+        int stick1 = (position + sticks.size() - 1) % sticks.size();
+        int stick2 = (position + 1) % sticks.size();
+
         if (!sticks.get(stick1).isFree()) {
             System.out.println("Stick 1 not available!!");
         }
         if (!sticks.get(stick2).isFree()) {
             System.out.println("Stick 2 not available!!");
         }else {
+            System.out.println("Philosopher " + this.getName() + " is eating");
             sticks.get(stick1).use();
             sticks.get(stick2).use();
         }
@@ -46,44 +55,27 @@ class philosopher extends Thread {
         }
     }
 
-    public void startChop() {
-        // getting which chopsticks the philosopher would use
-        int stick1 = position - 1 % 5;  // The left chop stick they would use
-        int stick2 = position + 1 % 5;  // The right chop stick they would
+    private void startChop() {
 
-        while (!sticks.get(stick1).isFree() || !sticks.get(stick2).isFree()) {
-//            if (!sticks.get(stick1).isFree()) {
-//                System.out.println("Stick 1 not available!!");
-//            }
-//            if (!sticks.get(stick2).isFree()) {
-//                System.out.println("Stick 2 not available!!");
-//            }
-//        } else {
-//            sticks.get(stick1).use();
-//            sticks.get(stick2).use();
-//        }
-//        }
-
+        int stick1 = (position + 4) % 5;
+        int stick2 = (position + 1) % 5;
             try {
-                wait();  // waiting for the chopstick to be free
+                chopstickSemaphores.get(stick1).acquire();
+                chopstickSemaphores.get(stick2).acquire();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-        }
-        sticks.get(stick1).use();
-        sticks.get(stick2).use();
-
-
+        System.out.println("Philosopher " + this.getName() + " has acquired chopsticks " + stick1 + " and " + stick2);
 
     }
-    private synchronized void stopChop(){
-        int stick1 = (position - 1 + 5) % 5;
+    private void stopChop(){
+
+        int stick1 = (position + 4) % 5;
         int stick2 = (position + 1) % 5;
+        chopstickSemaphores.get(stick1).release();
+        chopstickSemaphores.get(stick2).release();
+        System.out.println("Philosopher " + this.getName() + " has released chopsticks " + stick1 + " and " + stick2);
 
-        sticks.get(stick1).stopUse();
-        sticks.get(stick2).stopUse();
-
-        notifyAll();
     }
 }
