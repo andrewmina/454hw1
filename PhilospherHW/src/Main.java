@@ -7,11 +7,6 @@ public class Main {
 
         philosopher[] philosophers = new philosopher[5];
 
-
-
-
-
-
         ArrayList<chopStick> sticks = new ArrayList<>();
         for(int i = 0; i < 5; i++){
             sticks.add(new chopStick());
